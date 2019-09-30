@@ -47,13 +47,26 @@ export default {
             this.$refs[formName].validate((valid) => {
           if (valid) {
             // console.log(this.loginForm)
+            //登陆
            axios.post('/user/login',qs.stringify(this.loginForm)).then(response => {
                console.log(response)
-               const {success, roleList} = response.data
+               const {success, roleList, roleSize} = response.data
                if(success){
-                  this.$router.push('/main') 
+                  const role = roleList[0]
+                  const {id} = role
+                  return id                  
+               }else{
+                 
                }
     
+           }).then(id => {
+             //保存用户角色
+             axios.post('/user/saveRole',qs.stringify({roleId:id})).then(response => {
+               const {success} = response.data
+               if(success){
+                 this.$router.push({ path: '/main'})
+               }
+             })
            })
           } else {
             // console.debug('error submit!!')
