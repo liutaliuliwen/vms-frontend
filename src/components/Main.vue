@@ -1,7 +1,10 @@
 <template>
   <div class="main">
       <Header/>
-      <h1>This is main</h1>
+      <div class="content">
+          <Nav class="nav"/>
+          <Tab/>
+      </div>
   </div>
 </template>
 
@@ -9,13 +12,17 @@
 import Header from './Header'
 import axios from 'axios'
 import qs from 'qs'
+import Nav from './Nav'
+import Tab from './Tab'
 export default {
   name: 'Main',
   props: {   
   },
   //导入想要使用的组件
   components: {
-      Header
+      Header,
+        Nav,
+        Tab
   },
 
   data() {
@@ -42,5 +49,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+    .content {
+        display: flex;
+    }
 
+    .nav {
+        width: 200px;
+    }
+
+  
 </style>
