@@ -3,7 +3,10 @@
       <Header/>
       <div class="content">
           <Nav class="nav"/>
-          <Tab/>
+           <!-- 路由出口 -->
+             <router-view></router-view>
+
+          <!-- <Tab/> -->
       </div>
   </div>
 </template>

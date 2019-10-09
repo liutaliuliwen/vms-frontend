@@ -1,15 +1,15 @@
 <template>
-  <div class="tab">
-      <h1>Hello world</h1>
+  <div class="customer">
+      <h1>客户管理</h1>
   </div>
 </template>
 
 <script>
-import Header from "./Header";
+
 import axios from "axios";
 import qs from "qs";
 export default {
-  name: "Tab",
+  name: "Customer",
   props: {},
   //导入想要使用的组件
   components: {},

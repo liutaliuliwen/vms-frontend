@@ -1,10 +1,9 @@
 <template>
   <div class="nav">
     <el-menu
+      router="true"
       default-active="2"
-      class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
+   
     >
       <el-submenu index="1">
         <template slot="title">
@@ -45,8 +44,8 @@
           <i class="el-icon-menu"></i>
           <span slot="title">基础资料</span>
         </template>
-        <el-menu-item index="4-1">供应商管理</el-menu-item>
-        <el-menu-item index="4-2">客户管理</el-menu-item>
+        <el-menu-item index="/main/supplier">供应商管理</el-menu-item>
+        <el-menu-item index="/main/customer">客户管理</el-menu-item>
         <el-menu-item index="4-3">商品管理</el-menu-item>
         <el-menu-item index="4-4">初期库存</el-menu-item>
       </el-submenu>
