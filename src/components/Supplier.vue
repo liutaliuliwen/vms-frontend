@@ -8,10 +8,10 @@
         size="small"
         @click="dialogFormVisible = true"
       >添加</el-button>
-      <el-button type="primary" icon="el-icon-edit" size="small">编辑</el-button>
-      <el-button type="primary" icon="el-icon-delete" size="small">删除</el-button>
-      <el-input class="keyword" placeholder="请输入内容" v-model="supplierName" clearable></el-input>
-      <el-button type="primary" icon="el-icon-search" size="small">搜索</el-button>
+      <el-button type="primary" icon="el-icon-edit" size="small" @click="editFormVisible=true">编辑</el-button>
+      <el-button type="primary" icon="el-icon-delete" size="small" @click="showWarnMsgBox">删除</el-button>
+      <el-input class="keyword" placeholder="请输入内容" v-model="querySupplierName" clearable></el-input>      
+      <el-button type="primary" icon="el-icon-search" size="small" @click="searchSupplier(querySupplierName)">搜索</el-button>
     </div>
     <div>
       <el-dialog title="添加供应商" :visible.sync="dialogFormVisible" width="550px">
@@ -39,7 +39,37 @@
       </el-dialog>
     </div>
 
-    <el-table :data="suppliers" style="width: 100%; margin-top: 20px">
+    <div>
+      <el-dialog title="编辑供应商" :visible.sync="editFormVisible" width="550px">
+        <el-form :model="editedSupplier" label-position="left" :rules="rules" label-width="120px" ref="editedForm">
+          <el-form-item label="供应商名称：" prop="name">
+            <el-input v-model="editedSupplier.name" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="联系人：" prop="contact">
+            <el-input v-model="editedSupplier.contact" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="联系电话：" prop="number">
+            <el-input v-model="editedSupplier.number" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="联系地址：" prop="address">
+            <el-input v-model="editedSupplier.address" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="备注：" prop="remarks">
+            <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="editedSupplier.remarks"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="editFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editSupplier('editedForm')">确 定</el-button>
+        </div>
+      </el-dialog>
+    </div>
+
+    <el-table
+      :data="suppliers"
+      style="width: 100%; margin-top: 20px"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="id" label="编号" width="180"></el-table-column>
       <el-table-column prop="name" label="供应商名称" width="180"></el-table-column>
@@ -50,12 +80,13 @@
     </el-table>
 
     <el-pagination
-     background
-      layout="prev, pager, next" 
-      :total="total"  
+      class="pagination"
+      background
+      layout="prev, pager, next"
+      :total="total"
       :page-size="10"
-        @current-change="handleCurrentChange"
-      ></el-pagination>
+      @current-change="handleCurrentChange"
+    ></el-pagination>
   </div>
 </template>
 
@@ -70,10 +101,14 @@ export default {
 
   data() {
     return {
-      supplierName: "",
+      pageSize: 10,
+      currentPage: 1,
+      querySupplierName: "",
       dialogFormVisible: false,
+      editFormVisible: false,
       suppliers: [],
       total: 0,
+      multipleSelection: [],
       form: {
         name: "",
         contact: "",
@@ -114,18 +149,7 @@ export default {
                   message: "恭喜你，这是一条成功消息",
                   type: "success"
                 });
-                axios
-                  .post(
-                    "/admin/supplier/list",
-                    qs.stringify({ page: 1, rows: 10 })
-                  )
-                  .then(response => {
-                    console.log(response);
-                    const { data } = response;
-                    const { rows, total } = data;
-                    this.suppliers = rows;
-                    this.toatl = total;
-                  });
+                this.getSupplierList(this.currentPage, this.pageSize);
               } else {
                 this.$message({
                   showClose: true,
@@ -135,7 +159,7 @@ export default {
               }
             })
             .finally(() => {
-              this.$refs[formName].resetFields();
+              this.$refs[formName].resetFields()
             });
         } else {
           return false;
@@ -143,30 +167,136 @@ export default {
       });
     },
 
-     handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-            axios
-      .post("/admin/supplier/list", qs.stringify({ page: +val, rows: 10 }))
-      .then(response => {
-        console.log(response);
-        const { data } = response;
-        const { rows, total } = data;
-        this.suppliers = rows;
-        this.total = total;
+    editSupplier(formName) {
+       this.dialogFormVisible = false;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          axios
+            .post("/admin/supplier/save", qs.stringify(this.form))
+            .then(response => {
+              console.log(response);
+              const { data } = response;
+              const { success } = data;
+              if (success) {
+                this.$message({
+                  showClose: true,
+                  message: "恭喜你，这是一条成功消息",
+                  type: "success"
+                });
+                this.getSupplierList(this.currentPage, this.pageSize);
+              } else {
+                this.$message({
+                  showClose: true,
+                  message: "恭喜你，这是一条成功消息",
+                  type: "error"
+                });
+              }
+            })
+            .finally(() => {
+              this.$refs[formName].resetFields()
+            });
+        } else {
+          return false;
+        }
       });
+    },
+
+    getSupplierList(page, pageSize) {
+      axios
+        .post("/admin/supplier/list", qs.stringify({ page, rows: pageSize }))
+        .then(response => {
+          console.log(response)
+          const { data } = response
+          const { rows, total } = data
+          this.suppliers = rows
+          this.total = total
+        });
+    },
+
+    deleteSupplier(ids) {
+      axios
+        .post("/admin/supplier/delete", qs.stringify({ ids }))
+        .then(response => {
+          console.log(response)
+          const { data } = response
+          const { success } = data
+          if (success) {
+            this.$message({
+              showClose: true,
+              message: "删除供应商成功",
+              type: "success"
+            });
+            this.getSupplierList(this.currentPage, this.pageSize);
+          } else {
+            this.$message({
+              showClose: true,
+              message: "删除供应商失败",
+              type: "error"
+            });
+          }
+        })
+        .finally((e) => {
+          console.error(e)
+        });
+    },
+
+    searchSupplier(keyword){
+       axios
+        .post("/admin/supplier/comboList", qs.stringify({ q: keyword }))
+        .then(response => {
+          console.log(response)
+          const { data } = response        
+          this.suppliers = data
+          this.total = data.length         
+        })
+        .catch((e) => {
+          console.error(e)
+        }).finally(() => {
+          this.querySupplierName = ""
+        });
+    },
+
+    handleCurrentChange(val) {
+      this.currentPage = +val;
+      this.getSupplierList(this.currentPage, this.pageSize);
+    },
+
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+
+    showWarnMsgBox() {
+      if (this.multipleSelection.length === 0) {
+        this.$alert("请先选择供应商", "系统提示", {
+          confirmButtonText: "确定",
+          type: "warning"
+        });
+        return;
       }
+
+      this.$confirm("此操作将永久删除供应商信息, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          const ids = this.multipleSelection.map(item => item.id).join(",")
+          this.deleteSupplier(ids)
+        })
+        .catch((e) => {
+          console.log(e)
+        });
+    }
+  },
+
+  computed: {
+    editedSupplier: function(){
+      return this.multipleSelection === 1 ? this.multipleSelection.slice(0,1) : {}
+    }
   },
 
   mounted() {
-    axios
-      .post("/admin/supplier/list", qs.stringify({ page: 1, rows: 10 }))
-      .then(response => {
-        console.log(response);
-        const { data } = response;
-        const { rows, total } = data;
-        this.suppliers = rows;
-        this.total = total;
-      });
+    this.getSupplierList(this.currentPage, this.pageSize);
   }
 };
 </script>
@@ -186,5 +316,10 @@ export default {
   margin-left: 30px;
   margin-right: 30px;
   width: 400px;
+}
+
+.pagination {
+  margin-top: 20px;
+  float: right;
 }
 </style>
