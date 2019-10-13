@@ -2,6 +2,8 @@
 
 import Login from './components/Login'
 import Main from './components/Main'
+import Supplier from './components/Supplier'
+import Customer from './components/Customer'
 import VueRouter from 'vue-router'
 
 //2. 定义路由
@@ -10,7 +12,19 @@ import VueRouter from 'vue-router'
 // 或者，只是一个组件配置对象。
 const routes = [
     {path: '/login', component: Login},
-    {path: '/main', component: Main},
+    {path: '/main', component: Main,
+     children: [
+         {
+            path: 'supplier',
+            component: Supplier
+         },
+         {
+            path: 'customer',
+            component: Customer
+         }
+         
+         
+     ]},
     {path: '*', component: Login}
 ]
 
