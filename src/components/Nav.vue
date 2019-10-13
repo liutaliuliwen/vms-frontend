@@ -1,7 +1,7 @@
 <template>
   <div class="nav">
     <el-menu
-      router="true"
+      :router="true"
       default-active="2"
    
     >
