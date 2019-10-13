@@ -17,10 +17,10 @@ export default {
   name: "Tab",
   props: {},
   methods: {
-      addTab(targetName) {
-          let newTabName = '供应商管理'
+      addTab(targetName, tabTitle) {
+          let newTabName = ++this.tabIndex+''
           this.editableTabs.push({
-              title: 'New Tab',
+              title: tabTitle,
               name: newTabName,
               content: 'New Tab content'
           })
@@ -46,7 +46,15 @@ export default {
       bus.$on('menuSelect',(index, indexPath) => {
           console.log(index, indexPath)
           if(index === '5-1'){
-
+            //判断tab页是否展示
+            //没有就添加新的tab 有就激活
+            const tab = this.editableTabs.find(tab => tab.name === index)
+            if(tab === null){
+               this.addTab(index,'供应商管理')
+            }else{
+              
+            }
+           
           }
       })
   },
