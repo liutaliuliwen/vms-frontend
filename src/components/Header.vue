@@ -1,8 +1,8 @@
 <template>
   <div class="header">
-     <h2>进销存管理系统</h2>
+     <!-- <h2>进销存管理系统</h2>
      <h3>Powered By 道物科技</h3>
-     <p class="welcome">欢迎你</p>
+     <p class="welcome">欢迎你</p> -->
      <div></div>
   </div>
 </template>

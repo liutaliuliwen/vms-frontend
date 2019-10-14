@@ -8,7 +8,7 @@
         size="small"
         @click="dialogFormVisible = true"
       >添加</el-button>
-      <el-button type="primary" icon="el-icon-edit" size="small" @click="editFormVisible=true">编辑</el-button>
+      <el-button type="primary" icon="el-icon-edit" size="small" @click="showEditedSupplier">编辑</el-button>
       <el-button type="primary" icon="el-icon-delete" size="small" @click="showWarnMsgBox">删除</el-button>
       <el-input class="keyword" placeholder="请输入内容" v-model="querySupplierName" clearable></el-input>      
       <el-button type="primary" icon="el-icon-search" size="small" @click="searchSupplier(querySupplierName)">搜索</el-button>
@@ -108,6 +108,7 @@ export default {
       editFormVisible: false,
       suppliers: [],
       total: 0,
+      editedSupplier:{},
       multipleSelection: [],
       form: {
         name: "",
@@ -205,7 +206,7 @@ export default {
       axios
         .post("/admin/supplier/list", qs.stringify({ page, rows: pageSize }))
         .then(response => {
-          console.log(response)
+          console.log(response)          
           const { data } = response
           const { rows, total } = data
           this.suppliers = rows
@@ -286,13 +287,28 @@ export default {
         .catch((e) => {
           console.log(e)
         });
+    },
+
+  
+
+    showEditedSupplier() {
+      if(this.multipleSelection.length !== 1){
+         this.$message({
+          message: '请选择一个供应商',
+          type: 'warning'
+        });
+        return
+      }
+      let editedSupplier = this.multipleSelection[0]
+      this.editedSupplier = {...editedSupplier}
+      this.editFormVisible = true
     }
   },
 
   computed: {
-    editedSupplier: function(){
-      return this.multipleSelection === 1 ? this.multipleSelection.slice(0,1) : {}
-    }
+    // editedSupplier: function(){
+    //   return this.multipleSelection === 1 ? this.multipleSelection.slice(0,1) : {}
+    // }
   },
 
   mounted() {
