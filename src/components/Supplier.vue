@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "../request";
 import qs from "qs";
 export default {
   name: "Supplier",
