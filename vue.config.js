@@ -8,7 +8,13 @@ module.exports = {
             ws: true,
             changeOrigin: true
           }
-        }
+        },
+        // historyApiFallback: true
+        //  {
+        //   rewrites: [
+        //     {from: /\/index/,to: '/index.html'}
+        //   ]
+        // }
 
       }
 }

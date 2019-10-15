@@ -46,7 +46,7 @@
         </template>
         <el-menu-item index="/main/supplier">供应商管理</el-menu-item>
         <el-menu-item index="/main/customer">客户管理</el-menu-item>
-        <el-menu-item index="4-3">商品管理</el-menu-item>
+        <el-menu-item index="/main/goods">商品管理</el-menu-item>
         <el-menu-item index="4-4">初期库存</el-menu-item>
       </el-submenu>
 

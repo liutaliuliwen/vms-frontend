@@ -4,6 +4,7 @@ import Login from './components/Login'
 import Main from './components/Main'
 import Supplier from './components/Supplier'
 import Customer from './components/Customer'
+import Goods from './components/Goods'
 import VueRouter from 'vue-router'
 
 //2. 定义路由
@@ -21,6 +22,10 @@ const routes = [
          {
             path: 'customer',
             component: Customer
+         },
+         {
+            path: 'goods',
+            component: Goods
          }
          
          
