@@ -1,6 +1,6 @@
 <template>
   <div class="goodsManage">
-      <h1>goodsManage</h1>
+      <h3>商品管理</h3>
   </div>
 </template>
 
